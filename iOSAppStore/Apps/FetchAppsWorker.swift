@@ -16,23 +16,12 @@ struct FetchAppsWorker {
         self.completion = completion
     }
 
+    private func completeResponse(appgroup: AppGroup?, error: Error?) {
+        guard let apps = appgroup else { return }
+        completion?(apps)
+    }
     func execute() {
         let finalApi = String(format: api, feedType.rawValue)
-        guard let url = URL(string: finalApi) else { return }
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print("fetchItunesApps fails: \(error)")
-                return
-            }
-
-            guard let data = data else { return }
-            do {
-                let searchResult = try JSONDecoder().decode(AppGroup.self, from: data)
-                self.completion?(searchResult)
-
-            } catch let jsonErr {
-                print("Fail to decode json", jsonErr)
-            }
-            }.resume()
+        Service.execute(urlString: finalApi, completion: completeResponse)
     }
 }

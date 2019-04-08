@@ -15,23 +15,14 @@ struct FetchSearchResultWorker {
         self.keyword = keyword
         self.completion = completion
     }
+
+    private func completeResponse(results: SearchResult?, error: Error?) {
+        guard let data = results else { return }
+        completion?(data.results)
+    }
+
     func execute() {
         let urlString = "https://itunes.apple.com/search?term=\(keyword)&entity=software"
-        guard let url = URL(string: urlString) else { return }
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print("fetchItunesApps fails: \(error)")
-                return
-            }
-
-            guard let data = data else { return }
-            do {
-                let searchResult = try JSONDecoder().decode(SearchResult.self, from: data)
-                self.completion?(searchResult.results)
-
-            } catch let jsonErr {
-                print("Fail to decode json", jsonErr)
-            }
-            }.resume()
+        Service.execute(urlString: urlString, completion: completeResponse)
     }
 }

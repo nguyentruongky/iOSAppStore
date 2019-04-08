@@ -7,8 +7,19 @@
 //
 
 import UIKit
+import SDWebImage
 
 class AppsHeaderCell: UICollectionViewCell {
+    private var data: SocialApp?
+    func setData(_ data: SocialApp) {
+        self.data = data
+        companyLabel.text = data.name
+        titleLabel.text = data.tagline
+        if let url = URL(string: data.imageUrl) {
+            imageView.sd_setImage(with: url)
+        }
+
+    }
     let companyLabel: UILabel = {
         let label = UILabel()
         label.text = "Conpany name"
@@ -20,7 +31,7 @@ class AppsHeaderCell: UICollectionViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Title"
-        label.font = UIFont.systemFont(ofSize: 30)
+        label.font = UIFont.systemFont(ofSize: 22)
         label.numberOfLines = 0
         return label
     }()
@@ -30,6 +41,7 @@ class AppsHeaderCell: UICollectionViewCell {
         iv.layer.cornerRadius = 12
         iv.clipsToBounds = true
         iv.backgroundColor = .green
+        iv.contentMode = .scaleAspectFill
         return iv
     }()
 
